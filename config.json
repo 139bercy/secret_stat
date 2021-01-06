@@ -1,0 +1,57 @@
+{
+  "OUTPUT_DATA_PATH": "./",
+  "FILE_NAME" : "version_4",
+
+  "COLONNES_PERTINENTES" : [
+    "MONTANT_INVESTISSEMENT",
+    "MONTANT_PARTICIPATION_ETAT"
+  ],
+
+  "COL_TO_MINIMIZE" : "MONTANT_PARTICIPATION_ETAT",
+
+  "VENTILATIONS" : {
+    "MESURE" : "VOLET_RELANCE",
+    "CODE_DEPARTEMENT" : "CODE_REGION"
+  },
+
+  "GROUP_KEYS" : {
+    "VOLET_RELANCE": true,
+    "MESURE": true,
+    "CODE_REGION": true,
+    "CODE_DEPARTEMENT": true,
+    "TYPE_ENTREPRISE": true
+  },
+
+  "MEASURE_TYPES" : [
+    "max",
+    "sum",
+    "count"
+  ],
+
+  "RULES" : [
+    {
+      "RULE_NAME": "FREQUENCY",
+      "COLUMN_NAME": "count",
+      "THRESHOLD": 3,
+      "MIN_THRESH": true
+    },
+    {
+      "RULE_NAME": "DOMINANCE",
+      "COLUMN_NAME": "max_percentage",
+      "THRESHOLD": 85,
+      "MIN_THRESH": false
+    }
+  ],
+
+  "DONNEE_DE_REMPLACEMENT" : null,
+
+  "LIST_FUNCTIONS" : [
+    "max",
+    "sum",
+    "count",
+    "count"
+  ],
+
+  "ERROR_MESSAGE" : "Un certain nombre de cas violent le secret primaire {}: \n",
+  "ALL_FINE_MESSAGE" : "ALL {} values are safe under {} rule"
+}
