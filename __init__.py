@@ -23,7 +23,7 @@ def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path
     specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
 
     # Test the multiple aggregation
-    final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by)
+    final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by, columns_apply_secret)
 
     if export_to_csv:
         save_values(path_to_export, final_masked_dict)

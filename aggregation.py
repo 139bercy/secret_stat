@@ -30,10 +30,11 @@ class SafeAgregation():
         self.rules_list = config["RULES"]
         self.dict_aggreg = self._create_dict_aggregation(columns_apply_secret)
 
-    def specific_aggregator_factory(self, df, group_by):
+    def specific_aggregator_factory(self, df, group_by, columns_apply_secret):
         version_3 = self.perform_multiple_safe_aggregation(df, group_by)
         dict_masked_secondary = self.check_and_apply_secondary_secret(version_3,
                                                                       group_by,
+                                                                      columns_apply_secret,
                                                                       verbose=True)
         final_masked_dict = self.mask_values(dict_masked_secondary)
         return final_masked_dict
@@ -210,7 +211,7 @@ class Version3SafeAggregation(SafeAgregation):
                                             validate='1:1')
         return final_disclosure
 
-    def _mask_secondary_secret(self, df_to_mask, df_1, df_2, column_name, verbose):
+    def _mask_secondary_secret(self, df_to_mask, df_1, df_2, column_name, verbose, columns_apply_secret):
         list_regions = df_2[[disclosed > disclosable for (disclosable, disclosed) in
                              zip(df_1['disclosable_' + column_name],
                                  df_2['disclosed_' + column_name])]][self.common_column].values
@@ -226,15 +227,16 @@ class Version3SafeAggregation(SafeAgregation):
                     len(list_regions),
                     list_regions))
             for region in list_regions:
-                index_min = (
-                masked_df[masked_df[self.common_column] == region][(config["COL_TO_MINIMIZE"], 'sum')]).idxmin()
-                masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
+                for col in columns_apply_secret:
+                    index_min = (
+                    masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
+                    masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
         else:
             if verbose:
                 print('Aucune cellule sur lesquelles il faut apposer le secret secondaire')
         return masked_df
 
-    def check_and_apply_secondary_secret(self, df_dict, gb_keys, verbose=False):
+    def check_and_apply_secondary_secret(self, df_dict, gb_keys, columns_apply_secret, verbose=False):
         """ Check and mask secondary secrets.
 
         Input parameters :
@@ -257,10 +259,10 @@ class Version3SafeAggregation(SafeAgregation):
             if verbose:
                 print('Pour la colonne {}'.format(column_name))
                 print('Dans le dataframe Region/type dentreprise')
-            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose)
+            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose, columns_apply_secret)
             if verbose:
                 print('Dans le dataframe Region/Departement')
-            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose)
+            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose, columns_apply_secret)
 
         final_dict_df[gb_keys[0]] = df_0
         final_dict_df[gb_keys[1]] = df_1
