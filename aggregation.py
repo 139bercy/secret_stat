@@ -30,6 +30,14 @@ class SafeAgregation():
         self.rules_list = config["RULES"]
         self.dict_aggreg = self._create_dict_aggregation(config["COLONNES_PERTINENTES"])
 
+    def specific_aggregator_factory(self, df, group_by):
+        version_3 = self.perform_multiple_safe_aggregation(df, group_by)
+        dict_masked_secondary = self.check_and_apply_secondary_secret(version_3,
+                                                                      group_by,
+                                                                      verbose=True)
+        final_masked_dict = self.mask_values(dict_masked_secondary)
+        return final_masked_dict
+
     def set_measures(self, new_measures):
         self.measure_types = new_measures
 
@@ -146,7 +154,7 @@ class Version3SafeAggregation(SafeAgregation):
     - check_and_apply_secondary_secret : checks and masks secondary secret
     """
 
-    def __init__(self, common_column='CODE_REGION', *args, **kwargs):
+    def __init__(self, common_column, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.common_column = common_column
         self.frequency_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "FREQUENCY")[
