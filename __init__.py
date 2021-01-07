@@ -49,11 +49,11 @@ if __name__ == "__main__":
     col_secret = [
         "MONTANT_INVESTISSEMENT",
         "MONTANT_PARTICIPATION_ETAT"
-   ]
+    ]
+
     apply_secret_stat(group_by=gb,
                       columns_apply_secret=col_secret,
                       column_to_check="CODE_REGION",
                       data_path="/home/guillaume/Documents/planRelance/db-planr/scripts_python/safe_aggregation/decide_planr.csv",
                       export_to_csv=True,
-                      path_to_export="./data",
                       sep="|")
