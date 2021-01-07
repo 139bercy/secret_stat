@@ -6,14 +6,15 @@ from aggregation import Version3SafeAggregation
 
 class SecretStat:
 
-    def apply_secret_stat(group_by,
-                          columns_apply_secret,
-                          column_to_check,
-                          data_path=None,
-                          sep="|",
-                          dataframe=None,
-                          export_to_csv=None,
-                          path_to_export="./"):
+    def apply_secret_stat(self,
+                          group_by: list,
+                          columns_apply_secret: list,
+                          column_to_check: str,
+                          data_path: str = None,
+                          sep: str = "|",
+                          dataframe: pd.DataFrame = None,
+                          export_to_csv: bool = False,
+                          path_to_export: str = "./"):
         if data_path is None:
             if dataframe is None:
                 exit("specify data in order to process")
@@ -54,7 +55,8 @@ if __name__ == "__main__":
             "argent2": [10, 10, 10, 10, 10, 11]
             }
     test = pd.DataFrame(test)
-    x = SecretStat.apply_secret_stat(group_by=gb,
+    self = "self"
+    x = SecretStat.apply_secret_stat(self, group_by=gb,
                                  columns_apply_secret=col_secret,
                                  column_to_check="REGION",
                                  dataframe=test,

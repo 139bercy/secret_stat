@@ -30,7 +30,7 @@ class SafeAgregation():
         self.rules_list = config["RULES"]
         self.dict_aggreg = self._create_dict_aggregation(columns_apply_secret)
 
-    def specific_aggregator_factory(self, df, group_by, columns_apply_secret):
+    def specific_aggregator_factory(self, df: pd.DataFrame, group_by: list, columns_apply_secret: list):
         version_3 = self.perform_multiple_safe_aggregation(df, group_by)
         dict_masked_secondary = self.check_and_apply_secondary_secret(version_3,
                                                                       group_by,
@@ -42,11 +42,11 @@ class SafeAgregation():
     def set_measures(self, new_measures):
         self.measure_types = new_measures
 
-    def _create_dict_aggregation(self, list_targets):
+    def _create_dict_aggregation(self, list_targets: list):
         final_dict = {target: self.measure_types for target in list_targets}
         return final_dict
 
-    def _create_error_message(self, df, rule):
+    def _create_error_message(self, df: pd.DataFrame, rule):
         with open("config.json") as f:
             config = json.load(f)
         error_cases = df[df < rule['THRESHOLD']] if rule['MIN_THRESH'] else df[df > rule['THRESHOLD']]
@@ -58,7 +58,7 @@ class SafeAgregation():
         error_message += missing_val
         return ''.join(error_message)
 
-    def _check_primary_secret(self, df, verbose):
+    def _check_primary_secret(self, df: pd.DataFrame, verbose):
         with open("config.json") as f:
             config = json.load(f)
 
@@ -83,16 +83,16 @@ class SafeAgregation():
                     print(config["ALL_FINE_MESSAGE"].format(partial_df.shape[0], rule['RULE_NAME']))
         return safe_df
 
-    def aggregate(self, df, gb_keys):
+    def aggregate(self, df: pd.DataFrame, gb_keys: list):
         aggregated_df = df.groupby(list(gb_keys), as_index=False).agg(self.dict_aggreg)
         return aggregated_df
 
-    def safe_aggregate(self, df, gb_keys, verbose=False):
+    def safe_aggregate(self, df: pd.DataFrame, gb_keys: list, verbose=False):
         aggregated_df = df.groupby(list(gb_keys), as_index=False).agg(self.dict_aggreg)
         safe_df = self._check_primary_secret(aggregated_df, verbose)
         return safe_df
 
-    def perform_multiple_safe_aggregation(self, df, list_gb_keys):
+    def perform_multiple_safe_aggregation(self, df: pd.DataFrame, list_gb_keys: list):
         """ Performs multiple aggregation and primary secret check.
 
         Input parameters :
@@ -107,7 +107,7 @@ class SafeAgregation():
         for gb_key in list_gb_keys:
             dict_df[gb_key] = (self.safe_aggregate(df, gb_key))
         return dict_df
-
+# TODO not used ? :
     def get_sum_masked(self, dict_df):
         for k, v in dict_df.items():
             print(k)
@@ -118,7 +118,7 @@ class SafeAgregation():
                 print('Nombre total de cellules : {}'.format(v.shape[0]))
         return
 
-    def mask_values(self, dict_df):
+    def mask_values(self, dict_df: dict):
         """ Performs masking of primary secret.
 
         Needs to be performed after safe aggregation and secondary secret check.
@@ -155,7 +155,7 @@ class Version3SafeAggregation(SafeAgregation):
     - check_and_apply_secondary_secret : checks and masks secondary secret
     """
 
-    def __init__(self, common_column, secret_columns, *args, **kwargs):
+    def __init__(self, common_column: str, secret_columns: list, *args, **kwargs):
         super().__init__(columns_apply_secret=secret_columns, *args, **kwargs)
         self.common_column = common_column
         self.frequency_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "FREQUENCY")[
@@ -163,7 +163,7 @@ class Version3SafeAggregation(SafeAgregation):
         self.dominance_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "DOMINANCE")[
             'THRESHOLD']
 
-    def _compute_columns_secondary_secret(self, df, column_names):
+    def _compute_columns_secondary_secret(self, df: pd.DataFrame, column_names):
         aggregation_dict = {(col_lvl1, col_lvl2): func for col_lvl1 in self.relevant_column
                             for (col_lvl2, func) in LIST_FUNCTIONS}
 
