@@ -22,13 +22,13 @@ class SafeAgregation():
     """
     default_measure_types = MEASURE_TYPES.union({max_percentage})
 
-    def __init__(self, measure_types=default_measure_types):
+    def __init__(self, columns_apply_secret, measure_types=default_measure_types):
         with open("config.json") as f:
             config = json.load(f)
-        self.relevant_column = config["COLONNES_PERTINENTES"]
+        self.relevant_column = columns_apply_secret
         self.measure_types = measure_types
         self.rules_list = config["RULES"]
-        self.dict_aggreg = self._create_dict_aggregation(config["COLONNES_PERTINENTES"])
+        self.dict_aggreg = self._create_dict_aggregation(columns_apply_secret)
 
     def specific_aggregator_factory(self, df, group_by):
         version_3 = self.perform_multiple_safe_aggregation(df, group_by)
@@ -154,8 +154,8 @@ class Version3SafeAggregation(SafeAgregation):
     - check_and_apply_secondary_secret : checks and masks secondary secret
     """
 
-    def __init__(self, common_column, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, common_column, secret_columns, *args, **kwargs):
+        super().__init__(columns_apply_secret=secret_columns, *args, **kwargs)
         self.common_column = common_column
         self.frequency_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "FREQUENCY")[
             'THRESHOLD']

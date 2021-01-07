@@ -5,7 +5,7 @@ from utils import save_values
 from aggregation import Version3SafeAggregation
 
 
-def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path=None, dataframe=None, sep="|"):
+def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path=None, dataframe=None, sep="|", export_to_csv=None, path_to_export="./"):
     if data_path is None:
         if dataframe is None:
             exit("specify data in order to process")
@@ -20,12 +20,13 @@ def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path
         df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
 
     # Instanciate class
-    specific_aggregator = Version3SafeAggregation(column_to_check)
+    specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
 
     # Test the multiple aggregation
     final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by)
 
-    save_values(os.path.join(config["OUTPUT_DATA_PATH"], config["FILE_NAME"]), final_masked_dict)
+    if export_to_csv:
+        save_values(path_to_export, final_masked_dict)
 
 
 if __name__ == "__main__":
@@ -37,9 +38,14 @@ if __name__ == "__main__":
         ("MESURE", "FILIÈRE"),
         ("MESURE", "TYPE_ENTREPRISE"),
     ]
-    apply_secret_stat(gb,
-                      "ee",
-                      "CODE_REGION",
+    col_secret = [
+        "MONTANT_INVESTISSEMENT",
+        "MONTANT_PARTICIPATION_ETAT"
+   ]
+    apply_secret_stat(group_by=gb,
+                      columns_apply_secret=col_secret,
+                      column_to_check="CODE_REGION",
                       data_path="/home/guillaume/Documents/planRelance/db-planr/scripts_python/safe_aggregation/decide_planr.csv",
-                      dataframe="dsdc",
+                      export_to_csv=True,
+                      path_to_export="./data",
                       sep="|")

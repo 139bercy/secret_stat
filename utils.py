@@ -1,4 +1,6 @@
 import itertools
+import os
+
 
 def max_percentage(series):
     # Get the percentage of the maximum contributor of the series' sum.
@@ -6,9 +8,9 @@ def max_percentage(series):
     return round(max(series.transform(lambda x: x * 100 / max_val)), 2)
 
 
-def save_values(name, my_dict):
+def save_values(path, my_dict):
     for k, v in my_dict.items():
-        v.to_csv("agg_" + "_".join(k) + '.csv', sep=';',
+        v.to_csv(os.path.join(path, r"agg_" + "_".join(k) + '.csv'), sep=';',
                  index=False,
                  encoding='utf-8')
 
