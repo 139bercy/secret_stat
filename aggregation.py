@@ -256,12 +256,7 @@ class Version3SafeAggregation(SafeAgregation):
         disclosure_df_1 = self._get_full_disclosion_df(df_1)
 
         for column_name in self.relevant_column:
-            if verbose:
-                print('Pour la colonne {}'.format(column_name))
-                print('Dans le dataframe Region/type dentreprise')
             df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose, columns_apply_secret)
-            if verbose:
-                print('Dans le dataframe Region/Departement')
             df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose, columns_apply_secret)
 
         final_dict_df[gb_keys[0]] = df_0
