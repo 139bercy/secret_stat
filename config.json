@@ -1,6 +1,4 @@
 {
-  "COL_TO_MINIMIZE" : "MONTANT_PARTICIPATION_ETAT",
-
   "MEASURE_TYPES" : [
     "max",
     "sum",

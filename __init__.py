@@ -5,7 +5,14 @@ from utils import save_values
 from aggregation import Version3SafeAggregation
 
 
-def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path=None, dataframe=None, sep="|", export_to_csv=None, path_to_export="./"):
+def apply_secret_stat(group_by,
+                      columns_apply_secret,
+                      column_to_check,
+                      data_path=None,
+                      sep="|",
+                      dataframe=None,
+                      export_to_csv=None,
+                      path_to_export="./"):
     if data_path is None:
         if dataframe is None:
             exit("specify data in order to process")
@@ -28,6 +35,7 @@ def apply_secret_stat(group_by, columns_apply_secret, column_to_check, data_path
     if export_to_csv:
         save_values(path_to_export, final_masked_dict)
 
+    return final_masked_dict
 
 if __name__ == "__main__":
     gb = [
