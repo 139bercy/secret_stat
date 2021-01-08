@@ -11,7 +11,7 @@ def apply_secret_stat(group_by: list,
                       sep: str = "|",
                       dataframe: pd.DataFrame = None,
                       export_to_csv: bool = False,
-                      path_to_export: str = "./"):
+                      path_to_export: str = "./") -> dict:
     if data_path is None:
         if dataframe is None:
             exit("specify data in order to process")

@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 
-def max_percentage(series):
+def max_percentage(series: pd.Series):
     # Get the percentage of the maximum contributor of the series' sum.
     max_val = series.sum()
     return round(max(series.transform(lambda x: x * 100 / max_val)), 2)
@@ -31,7 +31,7 @@ def dataframe_3D_to_2D(dict3D: dict, columns_secret: list) -> dict:
     return final_dict
 
 
-def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list):
+def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list) -> pd.DataFrame:
     count_option_list = ["count", "max", "sum", "max_percentage"]
 
     for secret_column in columns_secret:  # secret_column = nom colonne à rajouter avec _count, _max etc...
