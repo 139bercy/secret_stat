@@ -1,10 +1,7 @@
-import json
-from unittest import TestCase
 
 import numpy as np
-import pytest
 import pandas as pd
-from pandas._testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal
 from main import apply_secret_stat
 
 
@@ -54,15 +51,14 @@ def test_secret_agg():
                 ("REGION", "ENTREPRISE")
             ]
     col_secret = ("argent1", "argent2")
+
     df_dict = apply_secret_stat(group_by=group,
-                           columns_apply_secret=col_secret,
-                           column_to_check="REGION",
-                           export_to_csv=True,
-                           dataframe=test)
+                                columns_apply_secret=col_secret,
+                                column_to_check="REGION",
+                                export_to_csv=True,
+                                dataframe=test)
     for data_frame in df_dict:
-        print(data_frame)
         assert_frame_equal(df_dict[data_frame], exp3[data_frame])
-    # assert_series_equal(df, exp3)
 
 if __name__ == "__main__":
     test_secret_agg()
