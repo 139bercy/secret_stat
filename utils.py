@@ -20,7 +20,6 @@ def dataframe_3D_to_2D(dict3D: dict, columns_secret: list) -> dict:
     for df_key in dict3D:
         df3D = dict3D[df_key]
         df_new_column = get_col_name_2D(df3D, columns_secret)
-
         df2D = df3D.copy()
         df2D.columns = df2D.columns.droplevel(1)
         df2D = df2D.join(df_new_column)
@@ -50,7 +49,7 @@ def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list):
         else:
             df_new_column = df_new_column.join(df)
 
-        return df_new_column
+    return df_new_column
 
 
 LIST_FUNCTIONS = [('max', max),
