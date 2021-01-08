@@ -15,11 +15,7 @@
         ```
        group_by = [
             ("CODE_REGION", "CODE_DEPARTEMENT"),
-            ("CODE_REGION", "TYPE_ENTREPRISE"),
-            ("CODE_REGION", "MESURE"),
-            ("CODE_REGION", "FILIÈRE"),
-            ("MESURE", "FILIÈRE"),
-            ("MESURE", "TYPE_ENTREPRISE"),
+            ("CODE_REGION", "TYPE_ENTREPRISE")
        ]
        ``` 
  - `columns_apply_secret` columns on which we will apply secrets, list
