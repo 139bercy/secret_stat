@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from utils import save_values
+from utils import save_values, dataframe_3D_to_2D
 from aggregation import Version3SafeAggregation
 
 
@@ -32,12 +32,16 @@ class SecretStat:
         specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
 
         # Test the multiple aggregation
-        final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by, columns_apply_secret)
+        final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by,
+                                                                            columns_apply_secret)
 
         if export_to_csv:
             save_values(path_to_export, final_masked_dict)
 
-        return final_masked_dict
+        final_2D_masked_dict = dataframe_3D_to_2D(final_masked_dict, col_secret)
+
+        return final_2D_masked_dict
+
 
 if __name__ == "__main__":
     gb = [
@@ -57,15 +61,8 @@ if __name__ == "__main__":
     test = pd.DataFrame(test)
     self = "self"
     x = SecretStat.apply_secret_stat(self, group_by=gb,
-                                 columns_apply_secret=col_secret,
-                                 column_to_check="REGION",
-                                 dataframe=test,
-                                 export_to_csv=True,
-                                 sep="|")
-    for dict in x:
-        print(dict)
-        for col in x[dict]:
-            print(col)
-            print(x[dict][col])
-
-    print("hello")
+                                     columns_apply_secret=col_secret,
+                                     column_to_check="REGION",
+                                     dataframe=test)
+    print("main")
+    # export_to_csv = True,

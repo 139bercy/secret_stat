@@ -6,7 +6,7 @@ from pandas._testing import assert_frame_equal
 from main import SecretStat
 
 
-def test_format_dataframe():
+def test_secret_agg():
     # test pour vérifier que les accents et les colonnes sont bient traité
     test = {"REGION": [1, 4, 4, 4, 4, 4],
             "TYPE_ENTREPRISE": ["PME", "GE", "PME", "PME", "PME", "PME"],
@@ -14,7 +14,6 @@ def test_format_dataframe():
             "argent1": [0, 0, 0, 0, 0, 999999],
             "argent2": [10, 10, 10, 10, 10, 11]
             }
-
     expected = {
                 ('REGION', ''): [1, 4, 4],
                 ('TYPE_ENTREPRISE', ''): ["PME", "GE", "PME"],
@@ -35,21 +34,21 @@ def test_format_dataframe():
         ('REGION', 'ENTREPRISE'): expected2
     }
 
-    pd.concat(exp3)
-    exp3 = pd.DataFrame(exp3)
     print(exp3)
+
     test = pd.DataFrame(test)
     group = [
                 ("REGION", "TYPE_ENTREPRISE"),
                 ("ENTREPRISE", "REGION")
             ]
-    df = SecretStat.apply_secret_stat(group_by=group,
+    df = SecretStat.apply_secret_stat(self="self",
+                                      group_by=group,
                                       columns_apply_secret=("argent1", "argent2"),
                                       column_to_check="REGION",
                                       export_to_csv=True,
                                       dataframe=test)
 
-
+    print(df)
     dictA_str = json.dumps(str(df), sort_keys=True)
     dictB_str = json.dumps(str(exp3), sort_keys=True)
     print(dictA_str)
@@ -57,3 +56,6 @@ def test_format_dataframe():
     assert dictA_str == dictB_str
 
     #assert_frame_equal(df, df, check_names=True)
+
+if __name__ == "__main__":
+    test_secret_agg()
