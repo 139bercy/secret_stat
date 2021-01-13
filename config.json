@@ -1,0 +1,32 @@
+{
+  "MEASURE_TYPES" : [
+    "max",
+    "sum",
+    "count"
+  ],
+
+  "RULES" : [
+    {
+      "RULE_NAME": "FREQUENCY",
+      "COLUMN_NAME": "count",
+      "THRESHOLD": 3,
+      "MIN_THRESH": true
+    },
+    {
+      "RULE_NAME": "DOMINANCE",
+      "COLUMN_NAME": "max_percentage",
+      "THRESHOLD": 85,
+      "MIN_THRESH": false
+    }
+  ],
+
+  "LIST_FUNCTIONS" : [
+    "max",
+    "sum",
+    "count",
+    "count"
+  ],
+
+  "ERROR_MESSAGE" : "Un certain nombre de cas violent le secret primaire {}: \n",
+  "ALL_FINE_MESSAGE" : "valeurs {} sont protégés par la règle {}"
+}
