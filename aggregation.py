@@ -163,18 +163,19 @@ class Version3SafeAggregation(SafeAgregation):
         self.dominance_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "DOMINANCE")[
             'THRESHOLD']
 
-    def _compute_columns_secondary_secret(self, df: pd.DataFrame, column_names) -> pd.DataFrame:
+    def _compute_columns_secondary_secret(self, df: pd.DataFrame, column_names: list) -> pd.DataFrame:
         aggregation_dict = {(col_lvl1, col_lvl2): func for col_lvl1 in self.relevant_column
                             for (col_lvl2, func) in LIST_FUNCTIONS}
 
-        grouped_df = df.groupby(column_names,
-                                as_index=False).agg(aggregation_dict)
+        grouped_df = df.groupby(column_names, as_index=False).agg(aggregation_dict)
+        # créer un dataframe avec juste les colonnes sur lequelles on fait des count etc et
+        # la colonne sur laquelle on applique le secret
         return grouped_df
 
     def _get_column_disclosure(self, df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-        # For each region, and each type of sum, checks if disclosed and if disclosable.
+        # For column_to_check, and each type of sum, checks if disclosed and if disclosable.
         # Input parameters :
-        # Output : DataFrame with 3 columns : Region code, disclosable, disclosed
+        # Output : DataFrame with 3 columns : column_to_check, disclosable, disclosed
 
         disclosable = True
         disclosed = True
@@ -184,6 +185,7 @@ class Version3SafeAggregation(SafeAgregation):
 
             frequency_rule = (secrets['count'].sum() > self.frequency_threshold)
             dominance_rule = ((secrets['max'].max() * 100) < self.dominance_threshold * secrets['sum'].sum())
+            # vérification des règles <85% et plus de 3
             disclosable = frequency_rule & dominance_rule
             disclosed = False
 

@@ -42,14 +42,14 @@ def apply_secret_stat(group_by: list,
 
 if __name__ == "__main__":
     gb = [
-        ("REGION", "ENTREPRISE"),
-        ("REGION", "TYPE_ENTREPRISE")
+        ("VOITURE", "ENTREPRISE"),
+        ("VOITURE", "TYPE_ENTREPRISE")
     ]
     col_secret = [
         "argent2",
         "argent1"
     ]
-    test = {"REGION": [1, 4, 4, 4, 4, 4],
+    test = {"VOITURE": [1, 4, 4, 4, 4, 4],
             "TYPE_ENTREPRISE": ["PME", "GE", "PME", "PME", "PME", "PME"],
             "ENTREPRISE": ["E", "E", "E", "E", "E", "ME"],
             "argent1": [0, 0, 0, 0, 0, 999999],
@@ -59,6 +59,6 @@ if __name__ == "__main__":
     self = "self"
     x = apply_secret_stat(group_by=gb,
                           columns_apply_secret=col_secret,
-                          column_to_check="REGION",
+                          column_to_check="VOITURE",
                           dataframe=test)
     # export_to_csv = True,
