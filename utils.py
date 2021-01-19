@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 
 
@@ -50,6 +51,18 @@ def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list) -> pd.DataFrame:
             df_new_column = df_new_column.join(df)
 
     return df_new_column
+
+def check_user_input(data_path: str, dataframe: pd.DataFrame, sep: str) -> pd.DataFrame:
+    if data_path is None:
+        if dataframe is None:
+            exit("specify data in order to process")
+        df_entreprises = dataframe
+    else:
+        if dataframe:
+            exit("To many data provided")
+        df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
+    return df_entreprises
+
 
 
 LIST_FUNCTIONS = [('max', max),

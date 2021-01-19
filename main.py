@@ -1,6 +1,5 @@
-import json
 import pandas as pd
-from utils import save_values, dataframe_3D_to_2D
+from utils import save_values, dataframe_3D_to_2D, check_user_input
 from aggregation import Version3SafeAggregation
 
 
@@ -12,18 +11,8 @@ def apply_secret_stat(group_by: list,
                       dataframe: pd.DataFrame = None,
                       export_to_csv: bool = False,
                       path_to_export: str = "./") -> dict:
-    if data_path is None:
-        if dataframe is None:
-            exit("specify data in order to process")
-        df_entreprises = dataframe
-    else:
-        if dataframe:
-            exit("To many data provided")
 
-        with open("config.json") as f:
-            config = json.load(f)
-        # Importing Dataset
-        df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
+    df_entreprises = check_user_input(data_path, dataframe)
 
     # Instanciate class
     specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
