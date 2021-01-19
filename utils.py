@@ -52,7 +52,7 @@ def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list) -> pd.DataFrame:
 
     return df_new_column
 
-def check_user_input(data_path: str, dataframe: pd.DataFrame, sep: str) -> pd.DataFrame:
+def check_user_input(data_path: str, dataframe: pd.DataFrame, sep: str, column_check) -> pd.DataFrame:
     if data_path is None:
         if dataframe is None:
             exit("specify data in order to process")
@@ -61,6 +61,9 @@ def check_user_input(data_path: str, dataframe: pd.DataFrame, sep: str) -> pd.Da
         if dataframe:
             exit("To many data provided")
         df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
+
+    if column_check is None:
+        exit("No column on which you which to check for secret, please provide one")
     return df_entreprises
 
 

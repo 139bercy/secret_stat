@@ -5,14 +5,14 @@ from aggregation import Version3SafeAggregation
 
 def apply_secret_stat(group_by: list,
                       columns_apply_secret: list,
-                      column_to_check: str,
+                      column_to_check: str = None,
                       data_path: str = None,
                       sep: str = "|",
                       dataframe: pd.DataFrame = None,
                       export_to_csv: bool = False,
                       path_to_export: str = "./") -> dict:
 
-    df_entreprises = check_user_input(data_path, dataframe, sep)
+    df_entreprises = check_user_input(data_path, dataframe, sep, column_to_check)
 
     # Instanciate class
     specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
