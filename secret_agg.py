@@ -1,7 +1,7 @@
 import json
 import pandas as pd
-from utils import save_values, dataframe_3D_to_2D
-from aggregation import Version3SafeAggregation
+from scripts.utils import save_values, dataframe_3D_to_2D
+from scripts.aggregation import Version3SafeAggregation
 
 
 def apply_secret_stat(group_by: list,
