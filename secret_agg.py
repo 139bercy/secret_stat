@@ -20,7 +20,7 @@ def apply_secret_stat(group_by: list,
         if dataframe:
             exit("To many data provided")
 
-        with open("config.json") as f:
+        with open("scripts/config.json") as f:
             config = json.load(f)
         # Importing Dataset
         df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)

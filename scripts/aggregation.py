@@ -1,5 +1,5 @@
 import json
-from utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
+from scripts.utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
 import pandas as pd
 
 
@@ -23,7 +23,7 @@ class SafeAgregation():
     default_measure_types = MEASURE_TYPES.union({max_percentage})
 
     def __init__(self, columns_apply_secret, measure_types=default_measure_types):
-        with open("../config.json") as f:
+        with open("scripts/config.json") as f:
             config = json.load(f)
         self.relevant_column = columns_apply_secret
         self.measure_types = measure_types
@@ -47,7 +47,7 @@ class SafeAgregation():
         return final_dict
 
     def _create_error_message(self, df: pd.DataFrame, rule):
-        with open("../config.json") as f:
+        with open("config.json") as f:
             config = json.load(f)
         error_cases = df[df < rule['THRESHOLD']] if rule['MIN_THRESH'] else df[df > rule['THRESHOLD']]
         error_message = [config["ERROR_MESSAGE"].format(rule['RULE_NAME'])]
@@ -59,7 +59,7 @@ class SafeAgregation():
         return ''.join(error_message)
 
     def _check_primary_secret(self, df: pd.DataFrame, verbose: bool) -> pd.DataFrame:
-        with open("../config.json") as f:
+        with open("scripts/config.json") as f:
             config = json.load(f)
 
         safe_df = df.copy()
@@ -225,7 +225,7 @@ class Version3SafeAggregation(SafeAgregation):
 
         masked_df = df_to_mask.copy()
 
-        with open("../config.json") as f:
+        with open("scripts/config.json") as f:
             config = json.load(f)
 
         if len(list_regions) != 0:
