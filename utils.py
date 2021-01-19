@@ -9,10 +9,11 @@ def max_percentage(series: pd.Series):
 
 
 def save_values(path, my_dict):
-    for k, v in my_dict.items():
-        v.to_csv(os.path.join(path, r"agg_" + "_".join(k) + '.csv'), sep=';',
-                 index=False,
-                 encoding='utf-8')
+    for df in my_dict:
+        my_dict[df].to_csv(os.path.join(path, r"agg_" + "_".join(df) + '.csv'),
+                           sep=';',
+                           index=False,
+                           encoding='utf-8')
 
 
 def dataframe_3D_to_2D(dict3D: dict, columns_secret: list) -> dict:
