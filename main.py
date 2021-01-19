@@ -12,7 +12,7 @@ def apply_secret_stat(group_by: list,
                       export_to_csv: bool = False,
                       path_to_export: str = "./") -> dict:
 
-    df_entreprises = check_user_input(data_path, dataframe)
+    df_entreprises = check_user_input(data_path, dataframe, sep)
 
     # Instanciate class
     specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
