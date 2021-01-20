@@ -1,6 +1,6 @@
 # secret_stat
 
-## imput:
+## input:
  - csv or dataframe
  - columns on which secret should be applied
  - column on which we check the secret
