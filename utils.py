@@ -8,9 +8,9 @@ def max_percentage(series: pd.Series):
     return round(max(series.transform(lambda x: x * 100 / max_val)), 2)
 
 
-def save_values(path, my_dict):
-    for df in my_dict:
-        my_dict[df].to_csv(os.path.join(path, r"agg_" + "_".join(df) + '.csv'),
+def save_values(path: str, my_dict: dict):
+    for df_name in my_dict:
+        my_dict[df_name].to_csv(os.path.join(path, "agg_" + "_".join(df_name) + ".csv"),
                            sep=';',
                            index=False,
                            encoding='utf-8')
