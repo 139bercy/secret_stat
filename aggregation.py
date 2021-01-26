@@ -184,8 +184,9 @@ class Version3SafeAggregation(SafeAgregation):
             secrets = df[df[column_name + '_keep'] == False][column_name]
 
             frequency_rule = (secrets['count'].sum() > self.frequency_threshold)
+            # vérification de la règle "plus de 3" représentants
             dominance_rule = ((secrets['max'].max() * 100) < self.dominance_threshold * secrets['sum'].sum())
-            # vérification des règles <85% et plus de 3
+            # vérification qu'aucun ne représente >85% du total
             disclosable = frequency_rule & dominance_rule
             disclosed = False
 
