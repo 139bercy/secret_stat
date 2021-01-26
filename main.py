@@ -27,27 +27,3 @@ def apply_secret_stat(group_by: list,
     final_2D_masked_dict = dataframe_3D_to_2D(final_masked_dict, columns_apply_secret)
 
     return final_2D_masked_dict
-
-
-if __name__ == "__main__":
-    gb = [
-        ("VOITURE", "ENTREPRISE"),
-        ("VOITURE", "TYPE_ENTREPRISE")
-    ]
-    col_secret = [
-        "argent2",
-        "argent1"
-    ]
-    test = {"VOITURE": [1, 4, 4, 4, 4, 4],
-            "TYPE_ENTREPRISE": ["PME", "GE", "PME", "PME", "PME", "PME"],
-            "ENTREPRISE": ["E", "E", "E", "E", "E", "ME"],
-            "argent1": [0, 0, 0, 0, 0, 999999],
-            "argent2": [10, 10, 10, 10, 10, 11]
-            }
-    test = pd.DataFrame(test)
-    self = "self"
-    x = apply_secret_stat(group_by=gb,
-                          columns_apply_secret=col_secret,
-                          column_to_check="VOITURE",
-                          dataframe=test)
-    # export_to_csv = True,
