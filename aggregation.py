@@ -146,7 +146,7 @@ class Version3SafeAggregation(SafeAgregation):
 
     Attributes :
     - arguments inherited from base class
-    - common_column : column that could be source for leaking secondary secrets
+    - column_to_check : column that could be source for leaking secondary secrets
     - frequency_threshold : the threshold for the primary frequency rule
     - dominance_threshold : the threshold for the primary dominance rule
 
@@ -155,9 +155,9 @@ class Version3SafeAggregation(SafeAgregation):
     - check_and_apply_secondary_secret : checks and masks secondary secret
     """
 
-    def __init__(self, common_column: str, secret_columns: list, *args, **kwargs):
+    def __init__(self, column_to_check: str, secret_columns: list, *args, **kwargs):
         super().__init__(columns_apply_secret=secret_columns, *args, **kwargs)
-        self.common_column = common_column
+        self.column_to_check = column_to_check
         self.frequency_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "FREQUENCY")[
             'THRESHOLD']
         self.dominance_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "DOMINANCE")[
@@ -168,12 +168,11 @@ class Version3SafeAggregation(SafeAgregation):
                             for (col_lvl2, func) in LIST_FUNCTIONS}
 
         grouped_df = df.groupby(column_names, as_index=False).agg(aggregation_dict)
-        # créer un dataframe avec juste les colonnes sur lequelles on fait des count etc et
-        # la colonne sur laquelle on applique le secret
+        # créer un dataframe avec juste les colonnes sur lequelles on réalise les agrégations listées dans aggregation_dict
         return grouped_df
 
     def _get_column_disclosure(self, df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-        # For column_to_check, and each type of sum, checks if disclosed and if disclosable.
+        # For self.column_to_check, checks: max, count, sum, max_percentage, if disclosed and if disclosable.
         # Input parameters :
         # Output : DataFrame with 3 columns : column_to_check, disclosable, disclosed
 
@@ -189,7 +188,7 @@ class Version3SafeAggregation(SafeAgregation):
             disclosable = frequency_rule & dominance_rule
             disclosed = False
 
-        return pd.DataFrame({self.common_column: df[self.common_column].values[0],
+        return pd.DataFrame({self.column_to_check: df[self.column_to_check].values[0],
                              'disclosable_' + column_name: [disclosable],
                              'disclosed_' + column_name: [disclosed]})
 
@@ -198,9 +197,9 @@ class Version3SafeAggregation(SafeAgregation):
 
         for column_name in self.relevant_column:
             df_grouped = self._compute_columns_secondary_secret(init_df,
-                                                                [self.common_column, column_name + '_keep'])
+                                                                [self.column_to_check, column_name + '_keep'])
 
-            column_disclosure = df_grouped.groupby(self.common_column, as_index=False).apply(
+            column_disclosure = df_grouped.groupby(self.column_to_check, as_index=False).apply(
                 func=lambda x: self._get_column_disclosure(x, column_name))
 
             if final_disclosure.empty:
@@ -208,7 +207,7 @@ class Version3SafeAggregation(SafeAgregation):
             else:
                 final_disclosure = pd.merge(final_disclosure,
                                             column_disclosure,
-                                            on=self.common_column,
+                                            on=self.column_to_check,
                                             how='inner',
                                             validate='1:1')
         return final_disclosure
@@ -223,7 +222,7 @@ class Version3SafeAggregation(SafeAgregation):
 
         list_regions = df_2[[disclosed > disclosable for (disclosable, disclosed) in
                              zip(df_1['disclosable_' + column_name],
-                                 df_2['disclosed_' + column_name])]][self.common_column].values
+                                 df_2['disclosed_' + column_name])]][self.column_to_check].values
 
         masked_df = df_to_mask.copy()
 
@@ -238,7 +237,7 @@ class Version3SafeAggregation(SafeAgregation):
             for region in list_regions:
                 for col in columns_apply_secret:
                     index_min = (
-                    masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
+                    masked_df[masked_df[self.column_to_check] == region][(col, 'sum')]).idxmin()
                     masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
         else:
             if verbose:

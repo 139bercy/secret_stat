@@ -52,7 +52,7 @@ def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list) -> pd.DataFrame:
 
     return df_new_column
 
-def check_user_input(data_path: str, dataframe: pd.DataFrame, sep: str, column_check) -> pd.DataFrame:
+def check_user_input(data_path: os.PathLike, dataframe: pd.DataFrame, sep: str, column_check) -> pd.DataFrame:
     if data_path is None:
         if dataframe is None:
             exit("specify data in order to process")
