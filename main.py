@@ -12,13 +12,13 @@ def apply_secret_stat(group_by: list,
                       export_to_csv: bool = False,
                       path_to_export: str = "./") -> dict:
 
-    df_entreprises = check_user_input(data_path, dataframe, sep, column_to_check)
+    df = check_user_input(data_path, dataframe, sep, column_to_check)
 
     # Instanciate class
     specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
 
     # Test the multiple aggregation
-    final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by,
+    final_masked_dict = specific_aggregator.specific_aggregator_factory(df, group_by,
                                                                         columns_apply_secret)
 
     if export_to_csv:
