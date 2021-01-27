@@ -1,7 +1,7 @@
 import json
 import pandas as pd
-from scripts.utils import save_values, dataframe_3D_to_2D
-from scripts.aggregation import Version3SafeAggregation
+from secret_statistic.utils import save_values, dataframe_3D_to_2D
+from secret_statistic.aggregation import Version3SafeAggregation
 
 
 def apply_secret_stat(group_by: list,
@@ -20,7 +20,7 @@ def apply_secret_stat(group_by: list,
         if dataframe:
             exit("To many data provided")
 
-        with open("scripts/config.json") as f:
+        with open("config.json") as f:
             config = json.load(f)
         # Importing Dataset
         df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
