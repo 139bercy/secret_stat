@@ -29,7 +29,7 @@ class SafeAgregation():
 
     default_measure_types = MEASURE_TYPES.union({max_percentage})
 
-    def __init__(self,  common_column: str, columns_apply_secret: list, measure_types=default_measure_types, *args, **kwargs):
+    def __init__(self,  common_column: str, columns_apply_secret: list, measure_types=default_measure_types):
         with open("config.json") as f:
             config = json.load(f)
         self.relevant_column = columns_apply_secret
