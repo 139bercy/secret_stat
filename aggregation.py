@@ -4,13 +4,18 @@ import pandas as pd
 
 
 class SafeAgregation():
-    """ Perform aggregation and primary secret check.
+    """ Perform aggregation and secret check and removal.
 
     Attributes :
     - relevant_column : list of columns on which to perform aggregation
     - measure_types : set of functions for groupby
     - rules_dict : dictionnary of rules with rule name and rule threshold
     - dict_aggreg : dictionnary of aggregation for groupby
+
+    - arguments inherited from base class
+    - common_column : column that could be source for leaking secondary secrets
+    - frequency_threshold : the threshold for the primary frequency rule
+    - dominance_threshold : the threshold for the primary dominance rule
 
 
     Public methods available :
@@ -19,7 +24,9 @@ class SafeAgregation():
     - perform_multiple_safe_aggregation : perform aggregation for list of groups of columns to groupby
     - get_sum_masked : get information on the number of cells and the value being masked
     - mask_values : perform masking of the cells for primary secret
+    - check_and_apply_secondary_secret : checks and masks secondary secret
     """
+
     default_measure_types = MEASURE_TYPES.union({max_percentage})
 
     def __init__(self,  common_column: str, columns_apply_secret: list, measure_types=default_measure_types, *args, **kwargs):
