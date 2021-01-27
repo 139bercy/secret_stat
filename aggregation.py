@@ -22,13 +22,18 @@ class SafeAgregation():
     """
     default_measure_types = MEASURE_TYPES.union({max_percentage})
 
-    def __init__(self, columns_apply_secret, measure_types=default_measure_types):
+    def __init__(self,  common_column: str, columns_apply_secret: list, measure_types=default_measure_types, *args, **kwargs):
         with open("config.json") as f:
             config = json.load(f)
         self.relevant_column = columns_apply_secret
         self.measure_types = measure_types
         self.rules_list = config["RULES"]
         self.dict_aggreg = self._create_dict_aggregation(columns_apply_secret)
+        self.common_column = common_column
+        self.frequency_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "FREQUENCY")[
+            'THRESHOLD']
+        self.dominance_threshold = next(item for item in self.rules_list if item["RULE_NAME"] == "DOMINANCE")[
+            'THRESHOLD']
 
     def specific_aggregator_factory(self, df: pd.DataFrame, group_by: list, columns_apply_secret: list) -> pd.DataFrame:
         version_3 = self.perform_multiple_safe_aggregation(df, group_by)
@@ -140,7 +145,123 @@ class SafeAgregation():
             final_dict_df[k] = masked_df
         return final_dict_df
 
+# added
 
+    def _compute_columns_secondary_secret(self, df: pd.DataFrame, column_names) -> pd.DataFrame:
+        aggregation_dict = {(col_lvl1, col_lvl2): func for col_lvl1 in self.relevant_column
+                            for (col_lvl2, func) in LIST_FUNCTIONS}
+
+        grouped_df = df.groupby(column_names,
+                                as_index=False).agg(aggregation_dict)
+        return grouped_df
+
+    def _get_column_disclosure(self, df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+        # For each region, and each type of sum, checks if disclosed and if disclosable.
+        # Input parameters :
+        # Output : DataFrame with 3 columns : Region code, disclosable, disclosed
+
+        disclosable = True
+        disclosed = True
+
+        if False in df[column_name + '_keep'].value_counts().index:
+            secrets = df[df[column_name + '_keep'] == False][column_name]
+
+            frequency_rule = (secrets['count'].sum() > self.frequency_threshold)
+            dominance_rule = ((secrets['max'].max() * 100) < self.dominance_threshold * secrets['sum'].sum())
+            disclosable = frequency_rule & dominance_rule
+            disclosed = False
+
+        return pd.DataFrame({self.common_column: df[self.common_column].values[0],
+                             'disclosable_' + column_name: [disclosable],
+                             'disclosed_' + column_name: [disclosed]})
+
+    def _get_full_disclosion_df(self, init_df: pd.DataFrame) -> pd.DataFrame:
+        final_disclosure = pd.DataFrame()
+
+        for column_name in self.relevant_column:
+            df_grouped = self._compute_columns_secondary_secret(init_df,
+                                                                [self.common_column, column_name + '_keep'])
+
+            column_disclosure = df_grouped.groupby(self.common_column, as_index=False).apply(
+                func=lambda x: self._get_column_disclosure(x, column_name))
+
+            if final_disclosure.empty:
+                final_disclosure = column_disclosure.copy()
+            else:
+                final_disclosure = pd.merge(final_disclosure,
+                                            column_disclosure,
+                                            on=self.common_column,
+                                            how='inner',
+                                            validate='1:1')
+        return final_disclosure
+
+    def _mask_secondary_secret(self,
+                               df_to_mask: pd.DataFrame,
+                               df_1: pd.DataFrame,
+                               df_2: pd.DataFrame,
+                               column_name: str,
+                               verbose: bool,
+                               columns_apply_secret: list) -> pd.DataFrame:
+
+        list_regions = df_2[[disclosed > disclosable for (disclosable, disclosed) in
+                             zip(df_1['disclosable_' + column_name],
+                                 df_2['disclosed_' + column_name])]][self.common_column].values
+
+        masked_df = df_to_mask.copy()
+
+        with open("config.json") as f:
+            config = json.load(f)
+
+        if len(list_regions) != 0:
+            if verbose:
+                print('{} cellules sur lesquelles le secret secondaire doit être apposé, regions : {}'.format(
+                    len(list_regions),
+                    list_regions))
+            for region in list_regions:
+                for col in columns_apply_secret:
+                    index_min = (
+                    masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
+                    masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
+        else:
+            if verbose:
+                print('Aucune cellule sur lesquelles il faut apposer le secret secondaire')
+        return masked_df
+
+    def check_and_apply_secondary_secret(self,
+                                         df_dict: dict,
+                                         gb_keys: list,
+                                         columns_apply_secret: list,
+                                         verbose: bool = False) -> dict:
+        """ Check and mask secondary secrets.
+
+        Input parameters :
+        - df_dict : dictionnary that is output of the perform_multiple_safe_aggregation from base class
+        - gb_keys : list of the dictionnary's keys
+        - verbose [optional] : default is False, gather insights on masked cells
+
+        Output :
+        final_dict_df : similar dictionnary as the input, with the secondary secrets masked.
+        """
+        final_dict_df = df_dict.copy()
+
+        df_0 = final_dict_df[gb_keys[0]].copy()
+        df_1 = final_dict_df[gb_keys[1]].copy()
+
+        disclosure_df_0 = self._get_full_disclosion_df(df_0)
+        disclosure_df_1 = self._get_full_disclosion_df(df_1)
+
+        for column_name in self.relevant_column:
+            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose, columns_apply_secret)
+            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose, columns_apply_secret)
+
+        final_dict_df[gb_keys[0]] = df_0
+        final_dict_df[gb_keys[1]] = df_1
+
+        return final_dict_df
+
+
+
+## TODO: remove v3agg
 class Version3SafeAggregation(SafeAgregation):
     """ Performs secondary secret check and removal.
 

@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from utils import save_values, dataframe_3D_to_2D
-from aggregation import Version3SafeAggregation
+from aggregation import SafeAgregation
 
 
 def apply_secret_stat(group_by: list,
@@ -26,7 +26,7 @@ def apply_secret_stat(group_by: list,
         df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
 
     # Instanciate class
-    specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
+    specific_aggregator = SafeAgregation(common_column=column_to_check, columns_apply_secret=columns_apply_secret)
 
     # Test the multiple aggregation
     final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by,
