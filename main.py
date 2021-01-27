@@ -32,10 +32,10 @@ def apply_secret_stat(group_by: list,
     final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by,
                                                                         columns_apply_secret)
 
-    if export_to_csv:
-        save_values(path_to_export, final_masked_dict)
-
     final_2D_masked_dict = dataframe_3D_to_2D(final_masked_dict, columns_apply_secret)
+
+    if export_to_csv:
+        save_values(path_to_export, final_2D_masked_dict)
 
     return final_2D_masked_dict
 
