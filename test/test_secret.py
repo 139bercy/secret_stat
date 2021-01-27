@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from secret_agg import apply_secret_stat
+from secret_statistic.secret_agg import apply_secret_stat
 
 
 def test_secret_agg():
