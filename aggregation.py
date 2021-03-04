@@ -281,7 +281,17 @@ class Version4SafeAggregation():
         self.dataframe = dataframe
         self.columns_to_check = columns_to_check
         self.columns_to_mask = columns_to_mask
+        self.group_by = columns_to_mask
 
     def aggregateFactory(self) -> dict:
-        self.dataframe
-        return {"r": "r", "e": "r"}
+
+        gb = self.dataframe.agg(["max"])
+        dict_df = {}
+        for gb_key in self.group_by:
+            dict_df[gb_key] = (self.safe_aggregate(self.dataframe, gb_key))
+        return dict_df
+
+    def safe_aggregate(self, df: pd.DataFrame, gb_keys: list, verbose=False) -> pd.DataFrame:
+        aggregated_df = df.groupby(list(gb_keys), as_index=False).agg(self.dict_aggreg)
+        safe_df = self._check_primary_secret(aggregated_df, verbose)
+        return safe_df

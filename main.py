@@ -34,8 +34,7 @@ if __name__ == "__main__":
             }
     test = pd.DataFrame(test)
     self = "self"
-    x = apply_secret_stat(group_by=gb,
-                          columns_apply_secret=col_secret,
-                          column_to_check="REGION",
-                          dataframe=test)
+    x = apply_secret_stat(dataframe=test,
+                          columns_to_check=col_secret,
+                          columns_to_mask=gb)
     # export_to_csv = True,
