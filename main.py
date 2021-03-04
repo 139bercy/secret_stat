@@ -1,41 +1,18 @@
 import json
 import pandas as pd
 from utils import save_values, dataframe_3D_to_2D
-from aggregation import Version3SafeAggregation
+from aggregation import Version3SafeAggregation, Version4SafeAggregation
 
 
-def apply_secret_stat(group_by: list,
-                      columns_apply_secret: list,
-                      column_to_check: str,
-                      data_path: str = None,
-                      sep: str = "|",
-                      dataframe: pd.DataFrame = None,
-                      export_to_csv: bool = False,
-                      path_to_export: str = "./") -> dict:
-    if data_path is None:
-        if dataframe is None:
-            exit("specify data in order to process")
-        df_entreprises = dataframe
-    else:
-        if dataframe:
-            exit("To many data provided")
+def apply_secret_stat(dataframe: pd.DataFrame,
+                      columns_to_check: list,
+                      columns_to_mask: list) -> dict:
 
-        with open("config.json") as f:
-            config = json.load(f)
-        # Importing Dataset
-        df_entreprises = pd.read_csv(data_path, encoding='utf-8', sep=sep)
+    specific_aggregator = Version4SafeAggregation(dataframe, columns_to_check, columns_to_mask)
 
-    # Instanciate class
-    specific_aggregator = Version3SafeAggregation(column_to_check, secret_columns=columns_apply_secret)
-
-    # Test the multiple aggregation
-    final_masked_dict = specific_aggregator.specific_aggregator_factory(df_entreprises, group_by,
-                                                                        columns_apply_secret)
+    final_masked_dict = specific_aggregator.aggregateFactory()
 
     final_2D_masked_dict = dataframe_3D_to_2D(final_masked_dict, columns_apply_secret)
-
-    if export_to_csv:
-        save_values(path_to_export, final_2D_masked_dict)
 
     return final_2D_masked_dict
 

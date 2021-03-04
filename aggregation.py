@@ -274,3 +274,14 @@ class Version3SafeAggregation(SafeAgregation):
         final_dict_df[gb_keys[1]] = df_1
 
         return final_dict_df
+
+class Version4SafeAggregation():
+
+    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, columns_to_mask: list, *args, **kwargs):
+        self.dataframe = dataframe
+        self.columns_to_check = columns_to_check
+        self.columns_to_mask = columns_to_mask
+
+    def aggregateFactory(self) -> dict:
+        self.dataframe
+        return {"r": "r", "e": "r"}
