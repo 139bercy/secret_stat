@@ -1,4 +1,6 @@
 import json
+
+import utils
 from utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
 import pandas as pd
 
@@ -275,6 +277,7 @@ class Version3SafeAggregation(SafeAgregation):
 
         return final_dict_df
 
+
 class Version4SafeAggregation():
 
     def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, columns_to_mask: list, *args, **kwargs):
@@ -282,16 +285,33 @@ class Version4SafeAggregation():
         self.columns_to_check = columns_to_check
         self.columns_to_mask = columns_to_mask
         self.group_by = columns_to_mask
+        self.measure_types = MEASURE_TYPES.union({max_percentage})
+        self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
+        with open("config.json") as f:
+            config = json.load(f)
+        self.rules_list = config["RULES"]
 
-    def aggregateFactory(self) -> dict:
+    def _create_dict_aggregation(self, list_targets: list) -> dict:
+        final_dict = {target: self.measure_types for target in list_targets}
+        return final_dict
 
-        gb = self.dataframe.agg(["max"])
+    def aggregateFactory(self) -> dict:  # pour chaque clef créer un dataframe avec les données censurées
         dict_df = {}
         for gb_key in self.group_by:
             dict_df[gb_key] = (self.safe_aggregate(self.dataframe, gb_key))
         return dict_df
 
-    def safe_aggregate(self, df: pd.DataFrame, gb_keys: list, verbose=False) -> pd.DataFrame:
-        aggregated_df = df.groupby(list(gb_keys), as_index=False).agg(self.dict_aggreg)
-        safe_df = self._check_primary_secret(aggregated_df, verbose)
+    def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
+        aggregated_df_3D = df.groupby(list(gb_keys)).agg(self.dict_aggreg).reset_index(level=0, drop=True)
+        aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
+        safe_df = self.check_secret(aggregated_df)
         return safe_df
+
+    def dataframe_3D_to_2D(self, df3D: pd.DataFrame) -> pd.DataFrame:
+        df3D.columns = ['_'.join(col) for col in df3D.columns.values]
+        df2D = df3D.copy()
+        return df2D
+
+    def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.columns_to_check
+        return df
