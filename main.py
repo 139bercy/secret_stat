@@ -23,8 +23,7 @@ if __name__ == "__main__":
         ("REGION", "TYPE_ENTREPRISE")
     ]
     col_secret = [
-        "argent2",
-        "argent1"
+        "argent2"
     ]
     test = {"REGION": [1, 4, 4, 4, 4, 4],
             "TYPE_ENTREPRISE": ["PME", "GE", "PME", "PME", "PME", "PME"],

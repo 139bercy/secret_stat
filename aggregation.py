@@ -283,7 +283,7 @@ class Version3SafeAggregation(SafeAgregation):
         return final_dict_df
 
 
-class Version4SafeAggregation():
+class Version4SafeAggregation:
 
     def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, columns_to_mask: list, *args, **kwargs):
         self.dataframe = dataframe
