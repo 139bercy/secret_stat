@@ -1,5 +1,7 @@
 import json
 
+import numpy as np
+
 import utils
 from utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
 import pandas as pd
@@ -54,9 +56,10 @@ class SafeAgregation():
         error_cases = df[df < rule['THRESHOLD']] if rule['MIN_THRESH'] else df[df > rule['THRESHOLD']]
         error_message = [config["ERROR_MESSAGE"].format(rule['RULE_NAME'])]
         missing_val = (
-        ['{} : {}  sur {} \n'.format(x, y, z) for (x, y, z) in zip(error_cases.count().index.get_level_values(0).values,
-                                                                   error_cases.count().values,
-                                                                   [df.shape[0]] * 2)])
+            ['{} : {}  sur {} \n'.format(x, y, z) for (x, y, z) in
+             zip(error_cases.count().index.get_level_values(0).values,
+                 error_cases.count().values,
+                 [df.shape[0]] * 2)])
         error_message += missing_val
         return ''.join(error_message)
 
@@ -238,7 +241,7 @@ class Version3SafeAggregation(SafeAgregation):
             for region in list_regions:
                 for col in columns_apply_secret:
                     index_min = (
-                    masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
+                        masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
                     masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
         else:
             if verbose:
@@ -269,8 +272,10 @@ class Version3SafeAggregation(SafeAgregation):
         disclosure_df_1 = self._get_full_disclosion_df(df_1)
 
         for column_name in self.relevant_column:
-            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose, columns_apply_secret)
-            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose, columns_apply_secret)
+            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose,
+                                               columns_apply_secret)
+            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose,
+                                               columns_apply_secret)
 
         final_dict_df[gb_keys[0]] = df_0
         final_dict_df[gb_keys[1]] = df_1
@@ -313,5 +318,13 @@ class Version4SafeAggregation():
         return df2D
 
     def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:
-        self.columns_to_check
+        for col_secret in self.columns_to_check:
+            df = self.check_max_percent(df, col_secret)
         return df
+
+    def check_max_percent(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
+        name = "_max_percentage"
+        col_secret = col_secret + name
+        df_percent = df.copy()
+        df_percent.loc[df_percent[col_secret] >= 85] = np.nan
+        return df_percent
