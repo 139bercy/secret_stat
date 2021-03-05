@@ -320,6 +320,7 @@ class Version4SafeAggregation():
     def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:
         for col_secret in self.columns_to_check:
             df = self.check_max_percent(df, col_secret)
+            df = self.check_count(df, col_secret)
         return df
 
     def check_max_percent(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
@@ -328,3 +329,10 @@ class Version4SafeAggregation():
         df_percent = df.copy()
         df_percent.loc[df_percent[col_secret] >= 85] = np.nan
         return df_percent
+
+    def check_count(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
+        df_count = df.copy()
+        name = "_count"
+        col_secret = col_secret + name
+        df_count.loc[df_count[col_secret] <= 3] = np.nan
+        return df_count
