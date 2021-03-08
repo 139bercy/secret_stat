@@ -1,20 +1,16 @@
-import json
 import pandas as pd
-from utils import save_values, dataframe_3D_to_2D
 from aggregation import Version3SafeAggregation, Version4SafeAggregation
 
 
 def apply_secret_stat(dataframe: pd.DataFrame,
                       columns_to_check: list,
-                      columns_to_mask: list) -> dict:
+                      list_aggregation: list) -> dict:
 
-    specific_aggregator = Version4SafeAggregation(dataframe, columns_to_check, columns_to_mask)
+    specific_aggregator = Version4SafeAggregation(dataframe, columns_to_check, list_aggregation)
 
     final_masked_dict = specific_aggregator.aggregateFactory()
 
-    final_2D_masked_dict = dataframe_3D_to_2D(final_masked_dict, columns_apply_secret)
-
-    return final_2D_masked_dict
+    return final_masked_dict
 
 
 if __name__ == "__main__":
@@ -35,5 +31,5 @@ if __name__ == "__main__":
     self = "self"
     x = apply_secret_stat(dataframe=test,
                           columns_to_check=col_secret,
-                          columns_to_mask=gb)
+                          list_aggregation=gb)
     # export_to_csv = True,
