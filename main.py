@@ -28,8 +28,7 @@ if __name__ == "__main__":
             "argent2": [10, 10, 10, 10, 10, 11]
             }
     test = pd.DataFrame(test)
-    self = "self"
+
     x = apply_secret_stat(dataframe=test,
                           columns_to_check=col_secret,
                           list_aggregation=gb)
-    # export_to_csv = True,
