@@ -285,8 +285,10 @@ class Version3SafeAggregation(SafeAgregation):
 
 class Version4SafeAggregation:
 
-    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, list_aggregation: list, *args, **kwargs):
+    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, list_aggregation: list, dominance, frequence, *args, **kwargs):
         self.dataframe = dataframe
+        self.frequence = frequence
+        self.dominance = dominance
         self.columns_to_check = columns_to_check
         self.list_aggregation = list_aggregation
         self.group_by = list_aggregation
@@ -327,12 +329,12 @@ class Version4SafeAggregation:
         name = "_max_percentage"
         col_secret = col_secret + name
         df_percent = df.copy()
-        df_percent.loc[df_percent[col_secret] >= 85] = np.nan
+        df_percent.loc[df_percent[col_secret] >= self.dominance] = np.nan
         return df_percent
 
     def check_count(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
         df_count = df.copy()
         name = "_count"
         col_secret = col_secret + name
-        df_count.loc[df_count[col_secret] <= 3] = np.nan
+        df_count.loc[df_count[col_secret] <= self.frequence] = np.nan
         return df_count

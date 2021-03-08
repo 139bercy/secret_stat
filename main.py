@@ -4,9 +4,11 @@ from aggregation import Version3SafeAggregation, Version4SafeAggregation
 
 def apply_secret_stat(dataframe: pd.DataFrame,
                       columns_to_check: list,
-                      list_aggregation: list) -> dict:
+                      list_aggregation: list,
+                      dominance: int = 85,
+                      frequence: int = 3) -> dict:
 
-    specific_aggregator = Version4SafeAggregation(dataframe, columns_to_check, list_aggregation)
+    specific_aggregator = Version4SafeAggregation(dataframe, columns_to_check, list_aggregation, dominance, frequence)
 
     final_masked_dict = specific_aggregator.aggregateFactory()
 

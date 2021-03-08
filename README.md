@@ -4,6 +4,10 @@
  - dataframe
  - list of list aggregation
  - column on which we check the secret
+### option:
+ - dominance, int (default: 85)
+ - frequence, int (default: 3)
+
 ## output:
 
  - dictionary of dataframe aggregated, dict keys are the items in the list of list aggregation
