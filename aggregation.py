@@ -285,11 +285,11 @@ class Version3SafeAggregation(SafeAgregation):
 
 class Version4SafeAggregation:
 
-    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, columns_to_mask: list, *args, **kwargs):
+    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, list_aggregation: list, *args, **kwargs):
         self.dataframe = dataframe
         self.columns_to_check = columns_to_check
-        self.columns_to_mask = columns_to_mask
-        self.group_by = columns_to_mask
+        self.list_aggregation = list_aggregation
+        self.group_by = list_aggregation
         self.measure_types = MEASURE_TYPES.union({max_percentage})
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
         with open("config.json") as f:
