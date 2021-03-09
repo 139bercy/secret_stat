@@ -290,7 +290,6 @@ class Version4SafeAggregation:
         self.frequence = frequence
         self.dominance = dominance
         self.columns_to_check = columns_to_check
-        self.list_aggregation = list_aggregation
         self.group_by = list_aggregation
         self.measure_types = MEASURE_TYPES.union({max_percentage})
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
