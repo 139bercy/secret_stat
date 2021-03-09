@@ -299,6 +299,7 @@ class Version4SafeAggregation:
         self.rules_list = config["RULES"]
 
     def _create_dict_aggregation(self, list_targets: list) -> dict:
+        self.dict_aggreg = {}
         final_dict = {target: self.measure_types for target in list_targets}
         return final_dict
 
@@ -309,14 +310,23 @@ class Version4SafeAggregation:
         return dict_df
 
     def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
-        aggregated_df_3D = df.groupby(list(gb_keys)).agg(self.dict_aggreg).reset_index(level=0, drop=True)
+        self.prepare_aggregate()
+        aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
         aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
         safe_df = self.check_secret(aggregated_df)
         return safe_df
 
+    def prepare_aggregate(self):
+        for column in self.dataframe:
+            if column not in self.columns_to_check:
+                self.dict_aggreg[column] = "first"
+
     def dataframe_3D_to_2D(self, df3D: pd.DataFrame) -> pd.DataFrame:
         df3D.columns = ['_'.join(col) for col in df3D.columns.values]
         df2D = df3D.copy()
+        for column in df2D:  # this loop remove the _first after the columns names
+            if "_first" in column:
+               df2D = df2D.rename(columns={column: column.replace('_first', '')})
         return df2D
 
     def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:

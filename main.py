@@ -17,8 +17,8 @@ def apply_secret_stat(dataframe: pd.DataFrame,
 
 if __name__ == "__main__":
     gb = [
-        ("REGION", "ENTREPRISE"),
-        ("REGION", "TYPE_ENTREPRISE")
+        ["REGION", "ENTREPRISE"],
+        ["REGION", "TYPE_ENTREPRISE"]
     ]
     col_secret = [
         "argent2"
