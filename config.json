@@ -25,8 +25,5 @@
     "sum",
     "count",
     "count"
-  ],
-
-  "ERROR_MESSAGE" : "Un certain nombre de cas violent le secret primaire {}: \n",
-  "ALL_FINE_MESSAGE" : "valeurs {} sont protégés par la règle {}"
+  ]
 }

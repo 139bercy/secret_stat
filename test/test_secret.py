@@ -52,13 +52,12 @@ def test_secret_agg():
             ]
     col_secret = ("argent1", "argent2")
 
-    df_dict = apply_secret_stat(group_by=group,
-                                columns_apply_secret=col_secret,
-                                column_to_check="REGION",
-                                export_to_csv=True,
-                                dataframe=test)
+    df_dict = apply_secret_stat(columns_to_check=col_secret,
+                                dataframe=test,
+                                list_aggregation=group)
     for data_frame in df_dict:
         assert_frame_equal(df_dict[data_frame], exp3[data_frame])
+
 
 if __name__ == "__main__":
     test_secret_agg()

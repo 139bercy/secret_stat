@@ -1,4 +1,8 @@
 import json
+
+import numpy as np
+
+import utils
 from utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
 import pandas as pd
 
@@ -52,9 +56,10 @@ class SafeAgregation():
         error_cases = df[df < rule['THRESHOLD']] if rule['MIN_THRESH'] else df[df > rule['THRESHOLD']]
         error_message = [config["ERROR_MESSAGE"].format(rule['RULE_NAME'])]
         missing_val = (
-        ['{} : {}  sur {} \n'.format(x, y, z) for (x, y, z) in zip(error_cases.count().index.get_level_values(0).values,
-                                                                   error_cases.count().values,
-                                                                   [df.shape[0]] * 2)])
+            ['{} : {}  sur {} \n'.format(x, y, z) for (x, y, z) in
+             zip(error_cases.count().index.get_level_values(0).values,
+                 error_cases.count().values,
+                 [df.shape[0]] * 2)])
         error_message += missing_val
         return ''.join(error_message)
 
@@ -236,7 +241,7 @@ class Version3SafeAggregation(SafeAgregation):
             for region in list_regions:
                 for col in columns_apply_secret:
                     index_min = (
-                    masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
+                        masked_df[masked_df[self.common_column] == region][(col, 'sum')]).idxmin()
                     masked_df.loc[index_min, masked_df.columns.get_level_values(0) == column_name] = None
         else:
             if verbose:
@@ -267,10 +272,79 @@ class Version3SafeAggregation(SafeAgregation):
         disclosure_df_1 = self._get_full_disclosion_df(df_1)
 
         for column_name in self.relevant_column:
-            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose, columns_apply_secret)
-            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose, columns_apply_secret)
+            df_1 = self._mask_secondary_secret(df_1, disclosure_df_0, disclosure_df_1, column_name, verbose,
+                                               columns_apply_secret)
+            df_0 = self._mask_secondary_secret(df_0, disclosure_df_1, disclosure_df_0, column_name, verbose,
+                                               columns_apply_secret)
 
         final_dict_df[gb_keys[0]] = df_0
         final_dict_df[gb_keys[1]] = df_1
 
         return final_dict_df
+
+
+class Version4SafeAggregation:
+
+    def __init__(self, dataframe: pd.DataFrame, columns_to_check: list, list_aggregation: list, dominance, frequence, *args, **kwargs):
+        self.dataframe = dataframe
+        self.frequence = frequence
+        self.dominance = dominance
+        self.columns_to_check = columns_to_check
+        self.list_aggregation = list_aggregation
+        self.group_by = list_aggregation
+        self.measure_types = MEASURE_TYPES.union({max_percentage})
+        self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
+        with open("config.json") as f:
+            config = json.load(f)
+        self.rules_list = config["RULES"]
+
+    def _create_dict_aggregation(self, list_targets: list) -> dict:
+        self.dict_aggreg = {}
+        final_dict = {target: self.measure_types for target in list_targets}
+        return final_dict
+
+    def aggregateFactory(self) -> dict:  # pour chaque clef créer un dataframe avec les données censurées
+        dict_df = {}
+        for gb_key in self.group_by:
+            dict_df[gb_key] = (self.safe_aggregate(self.dataframe, gb_key))
+        return dict_df
+
+    def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
+        self.prepare_aggregate()
+        aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
+        aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
+        safe_df = self.check_secret(aggregated_df)
+        return safe_df
+
+    def prepare_aggregate(self):
+        for column in self.dataframe:
+            if column not in self.columns_to_check:
+                self.dict_aggreg[column] = "first"
+
+    def dataframe_3D_to_2D(self, df3D: pd.DataFrame) -> pd.DataFrame:
+        df3D.columns = ['_'.join(col) for col in df3D.columns.values]
+        df2D = df3D.copy()
+        for column in df2D:  # this loop remove the _first after the columns names
+            if "_first" in column:
+               df2D = df2D.rename(columns={column: column.replace('_first', '')})
+        return df2D
+
+    def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:
+        for col_secret in self.columns_to_check:
+            df = self.check_max_percent(df, col_secret)
+            df = self.check_count(df, col_secret)
+        return df
+
+    def check_max_percent(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
+        name = "_max_percentage"
+        col_secret = col_secret + name
+        df_percent = df.copy()
+        df_percent.loc[df_percent[col_secret] >= self.dominance] = np.nan
+        return df_percent
+
+    def check_count(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
+        df_count = df.copy()
+        name = "_count"
+        col_secret = col_secret + name
+        df_count.loc[df_count[col_secret] <= self.frequence] = np.nan
+        return df_count
