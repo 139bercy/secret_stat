@@ -290,7 +290,6 @@ class Version4SafeAggregation:
         self.frequence = frequence
         self.dominance = dominance
         self.columns_to_check = columns_to_check
-        self.list_aggregation = list_aggregation
         self.group_by = list_aggregation
         self.measure_types = MEASURE_TYPES.union({max_percentage})
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
@@ -306,7 +305,7 @@ class Version4SafeAggregation:
     def aggregateFactory(self) -> dict:  # pour chaque clef créer un dataframe avec les données censurées
         dict_df = {}
         for gb_key in self.group_by:
-            dict_df[gb_key] = (self.safe_aggregate(self.dataframe, gb_key))
+            dict_df[tuple(gb_key)] = (self.safe_aggregate(self.dataframe, gb_key))
         return dict_df
 
     def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
