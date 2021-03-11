@@ -1,8 +1,5 @@
 import json
-
 import numpy as np
-
-import utils
 from utils import max_percentage, LIST_FUNCTIONS, MEASURE_TYPES
 import pandas as pd
 
