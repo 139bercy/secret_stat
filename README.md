@@ -15,8 +15,8 @@ Le module, secret statistique prend un dataframe de la librairie Pandas en entr�
 
 ## input :
  - Pandas.DataFrame, dataframe
- - list, columns_to_check : columns on which we check the secret
- - list, list_aggregation : list of list aggregation
+ - list, columns_to_check : colonnes sur lesquelles on regarde pour appliquer les secrets
+ - list, list_aggregation : liste of listes d'agrégations
 
 ### input option :
  - int, dominance (default: 85)
@@ -25,7 +25,7 @@ Le module, secret statistique prend un dataframe de la librairie Pandas en entr�
 ## output :
 
  - dictionary of dataframe aggregated, dict keys are the items in the list of list aggregation
-
+ - Dictionnaire de Pandas.DataFrame agrégés, les clefs du dictionnaire sont les listes contenue dans la liste `list_aggregation`
 ## Example :
 `apply_secret_stat(...)`
  - `list_aggregation`, `list of list` les aggregation à réaliser
@@ -36,5 +36,5 @@ Le module, secret statistique prend un dataframe de la librairie Pandas en entr�
             ["CODE_REGION", "TYPE_ENTREPRISE"]
        ]
        ``` 
- - `columns_to_check`, `list` columns on which we check secret
+ - `columns_to_check`, `list` colonnes sur lesquelles on regarde pour appliquer les secrets
  - `dataframe`, `Pandas.DataFrame` le jeu de données
