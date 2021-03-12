@@ -1,15 +1,15 @@
 # secret_stat
 Secret Stat est un module python qui masque un jeu de donnée fournis en entrée.
-Secret statistique, va créer des aggregations selon une liste de listes fournis en entrée puis va appliquer la règle de dominance et de fréquence qur les colonnes ciblées.
 
-Si il y 3 ou moins de champs les informations de la ligne serons remplacé par des valeurs null. 
+Secret statistique, va créer des agrégations, selon une liste de listes fournies en entrée puis va appliquer la règle de dominance et de fréquence sur les colonnes ciblées.
 
-Si il y à une valeur qui reprèsente plus de 85% les champs dans la ligne serons remplacés par des valeurs null.
+S'il y a 3 ou moins de champs les informations de la ligne serons remplacées par des valeurs null.
+
+S'il y a une valeur qui reprèsente plus de 85% les champs dans la ligne serons remplacés par des valeurs null.
 
 Les valeurs de dominance et fréquence peuvent être changés lors de l'appel de la fonction `apply_secret_stat(dataframe, columns_to_check, list_aggregation, dominance, frequence)`.
 
 Le module, secret statistique prend un dataframe de la librairie Pandas en entrée et fournis un dictionnaire de dataframes en sortie. Pour l'utiliser il faut appeler la fonction suivante : `apply_secret_stat(dataframe, columns_to_check, list_aggregation)`
-
 ## Librairie requise :
  - Pandas
 
