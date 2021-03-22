@@ -1,5 +1,5 @@
 import pandas as pd
-from aggregation import Version3SafeAggregation, Version4SafeAggregation
+from aggregation import Version4SafeAggregation
 
 
 def apply_secret_stat(dataframe: pd.DataFrame,
