@@ -49,8 +49,8 @@ LIST_FUNCTIONS = [('max', max),
                   ('count', 'count'),
                   ('count', sum)]
 
-MEASURE_TYPES = {
+MEASURE_TYPES = [
     'max',  # mandatory for secret checking
     'sum',  # mandatory for secret checking
     'count'  # mandatory for secret checking
-}
+]
