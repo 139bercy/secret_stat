@@ -76,6 +76,8 @@ class Version4SafeAggregation:
         for i in firsts_col:
             cols.remove(i)
             cols.insert(0, i)
+        cols.remove(firsts_col[0])
+        cols.insert(0, firsts_col[0])
         df = df[cols]
         reorder_df = df
         return reorder_df
