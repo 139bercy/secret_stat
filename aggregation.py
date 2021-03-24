@@ -12,7 +12,8 @@ class Version4SafeAggregation:
         self.dominance = dominance
         self.columns_to_check = columns_to_check
         self.group_by = list_aggregation
-        self.measure_types = MEASURE_TYPES.union({max_percentage})
+        self.measure_types = MEASURE_TYPES
+        self.measure_types.append(max_percentage)
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
         with open("config.json") as f:
             config = json.load(f)
