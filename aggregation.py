@@ -27,6 +27,7 @@ class Version4SafeAggregation:
         dict_df = {}
         for gb_key in self.group_by:
             dict_df[tuple(gb_key)] = (self.safe_aggregate(self.dataframe, gb_key))
+
         return dict_df
 
     def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
@@ -34,6 +35,7 @@ class Version4SafeAggregation:
         aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
         aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
         safe_df = self.check_secret(aggregated_df)
+        safe_df = self.reorder_columns(safe_df, gb_keys)
         return safe_df
 
     def prepare_aggregate(self):
@@ -68,3 +70,12 @@ class Version4SafeAggregation:
         col_secret = col_secret + name
         df_count.loc[df_count[col_secret] <= self.frequence] = np.nan
         return df_count
+
+    def reorder_columns(self, df, firsts_col):
+        cols = list(df.columns.values)
+        for i in firsts_col:
+            cols.remove(i)
+            cols.insert(0, i)
+        df = df[cols]
+        reorder_df = df
+        return reorder_df
