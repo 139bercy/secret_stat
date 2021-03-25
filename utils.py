@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 
 
@@ -6,14 +5,6 @@ def max_percentage(series: pd.Series):
     # Get the percentage of the maximum contributor of the series' sum.
     max_val = series.sum()
     return round(max(series.transform(lambda x: x * 100 / max_val)), 2)
-
-
-def save_values(path: str, my_dict: dict):
-    for df_name in my_dict:
-        my_dict[df_name].to_csv(os.path.join(path, "agg_" + "_".join(df_name) + ".csv"),
-                           sep=';',
-                           index=False,
-                           encoding='utf-8')
 
 
 def dataframe_3D_to_2D(dict3D: dict, columns_secret: list) -> dict:
@@ -58,8 +49,8 @@ LIST_FUNCTIONS = [('max', max),
                   ('count', 'count'),
                   ('count', sum)]
 
-MEASURE_TYPES = {
+MEASURE_TYPES = [
     'max',  # mandatory for secret checking
     'sum',  # mandatory for secret checking
     'count'  # mandatory for secret checking
-}
+]
