@@ -7,15 +7,15 @@ from main import apply_secret_stat
 
 def test_secret_agg():
     # test pour vérifier que les accents et les colonnes sont bient traité
-    test = {"REGION": [1, 4, 4, 4, 4, 4],
+    test = {"REGION": ["1", "4", "4", "4", "4", "4"],
             "TYPE_ENTREPRISE": ["PME", "GE", "PME", "PME", "PME", "PME"],
             "ENTREPRISE": ["E", "E", "E", "E", "E", "ME"],
             "argent1": [0, 0, 0, 0, 0, 999999],
             "argent2": [10, 10, 10, 10, 10, 11]
             }
     expected = {  # REGION, TYPE_ENTREPRISE
-                'REGION': [np.nan, np.nan, np.nan],
-                'TYPE_ENTREPRISE': [np.nan, np.nan, np.nan],
+                'REGION': ["1", "4", "4"],
+                'TYPE_ENTREPRISE': ["PME", "GE", "PME"],
                 'argent1_max': [np.nan, np.nan, np.nan],
                 'argent1_sum': [np.nan, np.nan, np.nan],
                 'argent1_count': [np.nan, np.nan, np.nan],
@@ -27,8 +27,8 @@ def test_secret_agg():
                 'ENTREPRISE': [np.nan, np.nan, np.nan]
                }
     expected2 = {  # REGION, ENTREPRISE
-                'REGION': [np.nan, 4, np.nan],
-                'ENTREPRISE': [np.nan, 'E', np.nan],
+                'REGION': ["1", "4", "4"],
+                'ENTREPRISE': ["E", 'E', "ME"],
                 'argent1_max': [np.nan, 0.0, np.nan],
                 'argent1_sum': [np.nan, 0.0, np.nan],
                 'argent1_count': [np.nan, 4, np.nan],
@@ -42,9 +42,12 @@ def test_secret_agg():
     expected = pd.DataFrame(expected)
     expected['ENTREPRISE'] = expected['ENTREPRISE'].astype(object)
     expected['TYPE_ENTREPRISE'] = expected['TYPE_ENTREPRISE'].astype(object)
+    expected['REGION'] = expected['REGION'].astype(object)
+
     expected2 = pd.DataFrame(expected2)
     expected2['ENTREPRISE'] = expected2['ENTREPRISE'].astype(object)
     expected2['TYPE_ENTREPRISE'] = expected2['TYPE_ENTREPRISE'].astype(object)
+    expected2['REGION'] = expected2['REGION'].astype(object)
 
     exp3 = {
         ('REGION', 'TYPE_ENTREPRISE'): expected,

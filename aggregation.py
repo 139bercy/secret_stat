@@ -35,8 +35,7 @@ class Version4SafeAggregation:
         self.prepare_aggregate()
         aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
         aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
-        safe_df = self.check_secret(aggregated_df)
-        safe_df = self.reorder_columns(safe_df, gb_keys)
+        safe_df = self.check_secret(aggregated_df, gb_keys)
         return safe_df
 
     def prepare_aggregate(self):
@@ -52,10 +51,14 @@ class Version4SafeAggregation:
                df2D = df2D.rename(columns={column: column.replace('_first', '')})
         return df2D
 
-    def check_secret(self, df: pd.DataFrame) -> pd.DataFrame:
+    def check_secret(self, df: pd.DataFrame, gb_key: list) -> pd.DataFrame:
+        df_gb_key_keep = df.copy()
+        df_gb_key_keep = df_gb_key_keep.filter(gb_key)
         for col_secret in self.columns_to_check:
             df = self.check_max_percent(df, col_secret)
             df = self.check_count(df, col_secret)
+        df = df.drop(gb_key, axis=1)
+        df = pd.concat([df_gb_key_keep, df], axis=1)
         return df
 
     def check_max_percent(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
@@ -71,14 +74,3 @@ class Version4SafeAggregation:
         col_secret = col_secret + name
         df_count.loc[df_count[col_secret] <= self.frequence] = np.nan
         return df_count
-
-    def reorder_columns(self, df, firsts_col):
-        cols = list(df.columns.values)
-        for i in firsts_col:
-            cols.remove(i)
-            cols.insert(0, i)
-        cols.remove(firsts_col[0])
-        cols.insert(0, firsts_col[0])
-        df = df[cols]
-        reorder_df = df
-        return reorder_df
