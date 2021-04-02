@@ -1,7 +1,10 @@
 import json
 import numpy as np
-from utils import MEASURE_TYPES_final
+from utils import max_percentage, MEASURE_TYPES
 import pandas as pd
+
+full_measure_types = MEASURE_TYPES
+full_measure_types.append(max_percentage)
 
 class Version4SafeAggregation:
 
@@ -11,7 +14,7 @@ class Version4SafeAggregation:
         self.dominance = dominance
         self.columns_to_check = columns_to_check
         self.group_by = list_aggregation
-        self.measure_types = MEASURE_TYPES_final
+        self.measure_types = full_measure_types
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
         with open("config.json") as f:
             config = json.load(f)
@@ -32,8 +35,6 @@ class Version4SafeAggregation:
     def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
         self.prepare_aggregate()
         aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
-
-        aggregated_df_3D.reset_index(drop=True, inplace=True)
         aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
         safe_df = self.check_secret(aggregated_df, gb_keys)
         return safe_df
