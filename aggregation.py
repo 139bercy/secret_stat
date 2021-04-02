@@ -1,8 +1,7 @@
 import json
 import numpy as np
-from utils import max_percentage, MEASURE_TYPES
+from utils import MEASURE_TYPES
 import pandas as pd
-
 
 class Version4SafeAggregation:
 
@@ -13,7 +12,6 @@ class Version4SafeAggregation:
         self.columns_to_check = columns_to_check
         self.group_by = list_aggregation
         self.measure_types = MEASURE_TYPES
-        self.measure_types.append(max_percentage)
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
         with open("config.json") as f:
             config = json.load(f)
@@ -51,15 +49,15 @@ class Version4SafeAggregation:
                df2D = df2D.rename(columns={column: column.replace('_first', '')})
         return df2D
 
-    def check_secret(self, df: pd.DataFrame, gb_key: list) -> pd.DataFrame:
-        df_gb_key_keep = df.copy()
+    def check_secret(self, df_secret: pd.DataFrame, gb_key: list) -> pd.DataFrame:
+        df_gb_key_keep = df_secret.copy()
         df_gb_key_keep = df_gb_key_keep.filter(gb_key)
         for col_secret in self.columns_to_check:
-            df = self.check_max_percent(df, col_secret)
-            df = self.check_count(df, col_secret)
-        df = df.drop(gb_key, axis=1)
-        df = pd.concat([df_gb_key_keep, df], axis=1)
-        return df
+            df_secret = self.check_max_percent(df_secret, col_secret)
+            df_secret = self.check_count(df_secret, col_secret)
+        df_secret = df_secret.drop(gb_key, axis=1)
+        df_secret = pd.concat([df_gb_key_keep, df_secret], axis=1)
+        return df_secret
 
     def check_max_percent(self, df: pd.DataFrame, col_secret: str) -> pd.DataFrame:
         name = "_max_percentage"
