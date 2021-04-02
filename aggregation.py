@@ -1,10 +1,7 @@
 import json
 import numpy as np
-from utils import max_percentage, MEASURE_TYPES
+from utils import MEASURE_TYPES_final
 import pandas as pd
-
-full_mesaure_types = MEASURE_TYPES
-full_mesaure_types.append(max_percentage)
 
 class Version4SafeAggregation:
 
@@ -14,7 +11,7 @@ class Version4SafeAggregation:
         self.dominance = dominance
         self.columns_to_check = columns_to_check
         self.group_by = list_aggregation
-        self.measure_types = full_mesaure_types
+        self.measure_types = MEASURE_TYPES_final
         self.dict_aggreg = self._create_dict_aggregation(columns_to_check)
         with open("config.json") as f:
             config = json.load(f)

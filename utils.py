@@ -43,14 +43,17 @@ def get_col_name_2D(df3D: pd.DataFrame, columns_secret: list) -> pd.DataFrame:
 
     return df_new_column
 
-
+"""
 LIST_FUNCTIONS = [('max', max),
                   ('sum', sum),
                   ('count', 'count'),
                   ('count', sum)]
+"""
 
 MEASURE_TYPES = [
     'max',  # mandatory for secret checking
     'sum',  # mandatory for secret checking
     'count'  # mandatory for secret checking
 ]
+
+MEASURE_TYPES_final = MEASURE_TYPES.append(max_percentage)
