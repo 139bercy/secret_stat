@@ -53,7 +53,7 @@ LIST_FUNCTIONS = [('max', max),
 MEASURE_TYPES = [
     'max',  # mandatory for secret checking
     'sum',  # mandatory for secret checking
-    'count'  # mandatory for secret checking
+    'count',  # mandatory for secret checking
+    max_percentage
 ]
 
-MEASURE_TYPES_final = MEASURE_TYPES.append(max_percentage)
