@@ -35,8 +35,6 @@ class Version4SafeAggregation:
     def safe_aggregate(self, df: pd.DataFrame, gb_keys: list) -> pd.DataFrame:
         self.prepare_aggregate()
         aggregated_df_3D = df.groupby(gb_keys, as_index=True).agg(self.dict_aggreg).reset_index(level=0, drop=True)
-
-        aggregated_df_3D.reset_index(drop=True, inplace=True)
         aggregated_df = self.dataframe_3D_to_2D(aggregated_df_3D)
         safe_df = self.check_secret(aggregated_df, gb_keys)
         return safe_df
